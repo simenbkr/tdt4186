@@ -1,8 +1,14 @@
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * This class implements a waiting area used as the bounded buffer, in the producer/consumer problem.
  */
 public class WaitingArea {
+
+    private int size;
+    private Queue<Customer> customerQueue;
+
 
     /**
      * Creates a new waiting area.
@@ -11,6 +17,8 @@ public class WaitingArea {
      */
     public WaitingArea(int size) {
         // TODO Implement required functionality
+        this.size = size;
+        this.customerQueue = new LinkedList<>();
     }
 
     /**
@@ -20,6 +28,12 @@ public class WaitingArea {
      */
     public synchronized void enter(Customer customer) {
         // TODO Implement required functionality
+        customerQueue.add(customer);
+        SushiBar.waitingAreaCount.increment();
+        SushiBar.write(Thread.currentThread().getName() + " | Customer #" + customer.getCustomerID() + " is now waiting.");
+
+        SushiBar.customerCounter.increment();
+        notify();
     }
 
     /**
@@ -27,7 +41,23 @@ public class WaitingArea {
      */
     public synchronized Customer next() {
         // TODO Implement required functionality
+        Customer customer = customerQueue.poll();
+
+        if(customer == null) {
+            return null;
+        }
+
+        SushiBar.waitingAreaCount.decrement();
+        SushiBar.write(Thread.currentThread().getName() + " | Customer #" + customer.getCustomerID() + " is now fetched.");
+        return customer;
     }
 
     // Add more methods as you see fit
+    public int getSize() {
+        return this.size;
+    }
+
+    public boolean isEmpty() {
+        return this.customerQueue.size() == 0;
+    }
 }

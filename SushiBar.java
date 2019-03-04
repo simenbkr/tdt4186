@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class SushiBar {
@@ -26,6 +27,8 @@ public class SushiBar {
     public static SynchronizedInteger takeawayOrders;
     public static SynchronizedInteger totalOrders;
 
+    public static SynchronizedInteger waitingAreaCount;
+
 
     public static void main(String[] args) {
         log = new File(path + "log.txt");
@@ -36,7 +39,37 @@ public class SushiBar {
         servedOrders = new SynchronizedInteger(0);
         takeawayOrders = new SynchronizedInteger(0);
 
-        // TODO initialize the bar and start the different threads
+        waitingAreaCount = new SynchronizedInteger(0);
+
+        Clock clock = new Clock(duration);
+        ArrayList<Thread> threads = new ArrayList<>();
+        WaitingArea waitingArea = new WaitingArea(waitingAreaCapacity);
+
+        for(int i = 0; i < waitressCount; i++) {
+            Waitress waitress = new Waitress(waitingArea);
+            Thread waitressThread = new Thread(waitress, "Waitress #" + i);
+            threads.add(waitressThread);
+            waitressThread.start();
+        }
+
+        Door door = new Door(waitingArea);
+        Thread doorThread = new Thread(door, "Door thread");
+        doorThread.start();
+        threads.add(doorThread);
+
+        for(Thread thread : threads) {
+            try {
+                thread.join();
+            } catch(InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+
+        write("***** NO MORE CUSTOMERS - THE SHOP IS CLOSED NOW. *****");
+        write("Total number of customers: " + customerCounter.get());
+        write("Total number of orders: " + totalOrders.get());
+        write("Total number of takeaway: " + takeawayOrders.get());
+        write("Total number of served: " + servedOrders.get());
     }
 
     //Writes actions in the log file and console
@@ -48,7 +81,6 @@ public class SushiBar {
             bw.close();
             System.out.println(Clock.getTime() + ", " + str);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

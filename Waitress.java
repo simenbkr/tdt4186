@@ -6,7 +6,7 @@ import java.util.Random;
  */
 public class Waitress implements Runnable {
 
-    private WaitingArea waitingArea;
+    private final WaitingArea waitingArea;
 
     /**
      * Creates a new waitress. Make sure to save the parameter in the class
@@ -37,13 +37,22 @@ public class Waitress implements Runnable {
                 e.printStackTrace();
             }
 
-            Customer next = this.waitingArea.next();
+            synchronized (this.waitingArea) {
 
-            if (next == null) {
-                continue;
+                Customer next = this.waitingArea.next();
+
+                while (next == null) {
+                    //continue;
+                        try {
+                            this.waitingArea.wait();
+                        } catch (InterruptedException e) {
+                            next = this.waitingArea.next();
+                            SushiBar.write("GOT INTERRUPTED BITCHES");
+                        }
+                    }
+
+                next.order();
             }
-
-            next.order();
         }
     }
 }

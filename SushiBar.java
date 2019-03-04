@@ -27,8 +27,7 @@ public class SushiBar {
     public static SynchronizedInteger takeawayOrders;
     public static SynchronizedInteger totalOrders;
 
-    public static SynchronizedInteger waitingAreaCount;
-
+    public static ArrayList<Thread> threads;
 
     public static void main(String[] args) {
         log = new File(path + "log.txt");
@@ -39,10 +38,8 @@ public class SushiBar {
         servedOrders = new SynchronizedInteger(0);
         takeawayOrders = new SynchronizedInteger(0);
 
-        waitingAreaCount = new SynchronizedInteger(0);
-
         Clock clock = new Clock(duration);
-        ArrayList<Thread> threads = new ArrayList<>();
+        threads = new ArrayList<>();
         WaitingArea waitingArea = new WaitingArea(waitingAreaCapacity);
 
         for(int i = 0; i < waitressCount; i++) {

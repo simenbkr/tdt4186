@@ -12,7 +12,7 @@ public class Door implements Runnable {
      * @param waitingArea   The customer queue waiting for a seat
      */
 
-    private WaitingArea waitingArea;
+    private final WaitingArea waitingArea;
     public Door(WaitingArea waitingArea) {
         // TODO Implement required functionality
 
@@ -37,16 +37,18 @@ public class Door implements Runnable {
                 e.printStackTrace();
             }
 
-            if(SushiBar.waitingAreaCount.get() >= this.waitingArea.getSize()) {
-                try {
-                    Thread.sleep(100);
-                } catch(InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else {
+            synchronized (this.waitingArea) {
+                if (this.waitingArea.isFull()) {
+                    try {
+                        this.waitingArea.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
 
-                Customer customer = new Customer(SushiBar.customerCounter.get());
-                this.waitingArea.enter(customer);
+                    Customer customer = new Customer(SushiBar.customerCounter.get());
+                    this.waitingArea.enter(customer);
+                }
             }
         }
 

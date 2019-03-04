@@ -29,11 +29,10 @@ public class WaitingArea {
     public synchronized void enter(Customer customer) {
         // TODO Implement required functionality
         customerQueue.add(customer);
-        SushiBar.waitingAreaCount.increment();
         SushiBar.write(Thread.currentThread().getName() + " | Customer #" + customer.getCustomerID() + " is now waiting.");
 
         SushiBar.customerCounter.increment();
-        notify();
+        this.notify();
     }
 
     /**
@@ -43,12 +42,12 @@ public class WaitingArea {
         // TODO Implement required functionality
         Customer customer = customerQueue.poll();
 
-        if(customer == null) {
+        if (customer == null) {
             return null;
         }
 
-        SushiBar.waitingAreaCount.decrement();
         SushiBar.write(Thread.currentThread().getName() + " | Customer #" + customer.getCustomerID() + " is now fetched.");
+        this.notify();
         return customer;
     }
 
@@ -59,5 +58,9 @@ public class WaitingArea {
 
     public boolean isEmpty() {
         return this.customerQueue.size() == 0;
+    }
+
+    public boolean isFull() {
+        return this.customerQueue.size() == this.size;
     }
 }

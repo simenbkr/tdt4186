@@ -16,7 +16,6 @@ public class WaitingArea {
      * @param size The maximum number of Customers that can be waiting.
      */
     public WaitingArea(int size) {
-        // TODO Implement required functionality
         this.size = size;
         this.customerQueue = new LinkedList<>();
     }

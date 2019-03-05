@@ -54,8 +54,6 @@ public class Customer {
      * @return Should return the customerID
      */
     public int getCustomerID() {
-        // TODO Implement required functionality
-
         return this.customerID;
     }
 

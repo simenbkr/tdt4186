@@ -27,8 +27,6 @@ public class SushiBar {
     public static SynchronizedInteger takeawayOrders;
     public static SynchronizedInteger totalOrders;
 
-    public static ArrayList<Thread> threads;
-
     public static void main(String[] args) {
         log = new File(path + "log.txt");
 
@@ -39,7 +37,7 @@ public class SushiBar {
         takeawayOrders = new SynchronizedInteger(0);
 
         Clock clock = new Clock(duration);
-        threads = new ArrayList<>();
+        ArrayList<Thread> threads = new ArrayList<>();
         WaitingArea waitingArea = new WaitingArea(waitingAreaCapacity);
 
         for(int i = 0; i < waitressCount; i++) {
@@ -67,6 +65,8 @@ public class SushiBar {
         write("Total number of orders: " + totalOrders.get());
         write("Total number of takeaway: " + takeawayOrders.get());
         write("Total number of served: " + servedOrders.get());
+
+        assert(totalOrders.get() == takeawayOrders.get() + servedOrders.get());
     }
 
     //Writes actions in the log file and console

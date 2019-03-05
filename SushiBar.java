@@ -74,9 +74,9 @@ public class SushiBar {
         try {
             FileWriter fw = new FileWriter(log.getAbsoluteFile(), true);
             BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(Clock.getTime() + ", " + str + "\n");
+            bw.write(Clock.getTime() + " | " + str + "\n");
             bw.close();
-            System.out.println(Clock.getTime() + ", " + str);
+            System.out.println(Clock.getTime() + " | " + str);
         } catch (IOException e) {
             e.printStackTrace();
         }

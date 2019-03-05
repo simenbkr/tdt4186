@@ -11,11 +11,9 @@ public class Door implements Runnable {
      *
      * @param waitingArea   The customer queue waiting for a seat
      */
-
     private final WaitingArea waitingArea;
-    public Door(WaitingArea waitingArea) {
-        // TODO Implement required functionality
 
+    public Door(WaitingArea waitingArea) {
         this.waitingArea = waitingArea;
     }
 
@@ -25,8 +23,6 @@ public class Door implements Runnable {
      */
     @Override
     public void run() {
-        // TODO Implement required functionality
-
         Random rnd = new Random();
 
         while (SushiBar.isOpen) {
@@ -44,15 +40,13 @@ public class Door implements Runnable {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                } else {
 
-                    Customer customer = new Customer(SushiBar.customerCounter.get());
-                    this.waitingArea.enter(customer);
                 }
+
+                Customer customer = new Customer(SushiBar.customerCounter.get());
+                this.waitingArea.enter(customer);
             }
+
         }
-
     }
-
-    // Add more methods as you see fit
 }

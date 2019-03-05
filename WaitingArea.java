@@ -27,11 +27,12 @@ public class WaitingArea {
      * @param customer A customer created by Door, trying to enter the waiting area
      */
     public synchronized void enter(Customer customer) {
-        // TODO Implement required functionality
         customerQueue.add(customer);
-        SushiBar.write(Thread.currentThread().getName() + " | Customer #" + customer.getCustomerID() + " is now waiting.");
+        SushiBar.write(Thread.currentThread().getName() + "   | Customer #" + customer.getCustomerID() + " is now waiting.");
 
         SushiBar.customerCounter.increment();
+
+        // Notify any waitress that a new customer has arrived.
         this.notify();
     }
 
@@ -39,21 +40,17 @@ public class WaitingArea {
      * @return The customer that is first in line.
      */
     public synchronized Customer next() {
-        // TODO Implement required functionality
         Customer customer = customerQueue.poll();
 
         if (customer == null) {
             return null;
         }
 
-        SushiBar.write(Thread.currentThread().getName() + " | Customer #" + customer.getCustomerID() + " is now fetched.");
+        SushiBar.write(Thread.currentThread().getName() + "   | Customer #" + customer.getCustomerID() + " is now fetched.");
+
+        // Notify the door that there is space again.
         this.notify();
         return customer;
-    }
-
-    // Add more methods as you see fit
-    public int getSize() {
-        return this.size;
     }
 
     public boolean isEmpty() {

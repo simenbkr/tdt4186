@@ -14,7 +14,6 @@ public class Customer {
     private int customerID;
 
     public Customer(int customerID) {
-        // TODO Implement required functionality
         this.customerID = customerID;
     }
 
@@ -23,26 +22,31 @@ public class Customer {
      * Here you should implement the functionality for ordering food as described in the assignment.
      */
     public synchronized void order(){
-        // TODO Implement required functionality
-        SushiBar.write("Customer #" + this.customerID + " is now ordering.");
-
         Random rnd = new Random();
+
+        try {
+            Thread.sleep(rnd.nextInt(SushiBar.waitressWait));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         int orders = rnd.nextInt(SushiBar.maxOrder - 1) + 1;
         int takeaway = rnd.nextInt(orders);
         int eatenHere = orders - takeaway;
-
-        try {
-            Thread.sleep(rnd.nextInt(SushiBar.customerWait));
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-        }
 
         SushiBar.takeawayOrders.add(takeaway);
         SushiBar.totalOrders.add(orders);
         SushiBar.servedOrders.add(eatenHere);
 
-        SushiBar.write(Thread.currentThread().getName() + " | Customer #" + this.customerID + " ate " + eatenHere + " orders here, and is taking away " + takeaway + " orders.");
-        SushiBar.write(Thread.currentThread().getName() + " | Customer #" + this.customerID + " is now leaving.");
+        SushiBar.write(Thread.currentThread().getName() + "   | Customer #" + this.customerID + " is now eating.");
+
+        try {
+            Thread.sleep(rnd.nextInt(SushiBar.customerWait * orders));
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        SushiBar.write(Thread.currentThread().getName() + "   | Customer #" + this.customerID + " is now leaving.");
     }
 
     /**

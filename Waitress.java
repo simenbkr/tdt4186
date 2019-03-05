@@ -14,8 +14,6 @@ public class Waitress implements Runnable {
      * @param waitingArea The waiting area for customers
      */
     Waitress(WaitingArea waitingArea) {
-        // TODO Implement required functionality
-
         this.waitingArea = waitingArea;
     }
 
@@ -25,34 +23,41 @@ public class Waitress implements Runnable {
      */
     @Override
     public void run() {
-        // TODO Implement required functionality
 
         Random rnd = new Random();
+        Customer next = null;
 
         while (SushiBar.isOpen || !this.waitingArea.isEmpty()) {
 
-            try {
-                Thread.sleep(rnd.nextInt(SushiBar.waitressWait));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
+            // Fetch the next customer from the shared resource, the waiting area.
             synchronized (this.waitingArea) {
 
-                Customer next = this.waitingArea.next();
+                if(this.waitingArea.isEmpty() && SushiBar.isOpen) {
+                    try {
+                        this.waitingArea.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
 
-                while (next == null) {
-                    //continue;
-                        try {
-                            this.waitingArea.wait();
-                        } catch (InterruptedException e) {
-                            next = this.waitingArea.next();
-                            SushiBar.write("GOT INTERRUPTED BITCHES");
-                        }
+                    // Get the next customer.
+                    next = this.waitingArea.next();
+
+                    // This is the last customer. Wake up other threads to let them die.
+                    if(!SushiBar.isOpen && this.waitingArea.isEmpty()) {
+                        this.waitingArea.notifyAll();
                     }
 
+                }
+            }
+
+            // Check that next is not null, as it might be if there has been a wait, and the thread has been woken. In
+            // this case, the thread will have to repeat.
+            if(next != null) {
+                // Order.
                 next.order();
             }
+
         }
     }
 }
